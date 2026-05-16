@@ -5,23 +5,29 @@ import java.sql.DriverManager;
 
 public class DBConnection {
 
-	private static Connection conn;
-	
-	public static Connection getConn() {
-		
-		try {
-			
-			//step:1 for connection - load the driver class 
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			
-			//step:2- create a connection
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3307/hospitals","root","tiger@01");
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			// TODO: handle exception
-		}
-		
-		return conn;
-	}
+    private static Connection conn;
+
+    public static Connection getConn() {
+        try {
+            if (conn == null || conn.isClosed()) {
+
+                String host = System.getenv("DB_HOST");
+                String port = System.getenv("DB_PORT");
+                String dbName = System.getenv("DB_NAME");
+                String user = System.getenv("DB_USER");
+                String password = System.getenv("DB_PASSWORD");
+
+                Class.forName("com.mysql.cj.jdbc.Driver");
+
+                String url = "jdbc:mysql://" + host + ":" + port + "/" + dbName
+                        + "?useSSL=true&serverTimezone=UTC";
+
+                conn = DriverManager.getConnection(url, user, password);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return conn;
+    }
 }
